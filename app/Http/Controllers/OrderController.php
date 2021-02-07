@@ -6,6 +6,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
+
 class OrderController extends Controller
 {
     /**
@@ -15,7 +16,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-    //
+        //
     }
 
     /**
@@ -43,13 +44,13 @@ class OrderController extends Controller
             'longitude' => 'required'
         ]);
 
-        $customer_id=auth()->user()->id;
+        $customer_id = auth()->user()->id;
         $order = Order::create([
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
             'amount' => $request->amount,
             'store_id' => $request->store_id,
-            'customer_id'=>$customer_id,
+            'customer_id' => $customer_id,
             'isDelivered' => 0,
 
         ]);
@@ -58,9 +59,8 @@ class OrderController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Order successfully added",
-            "order"=>$order
+            "order" => $order
         ]);
-
     }
 
     /**
@@ -95,19 +95,19 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         //assign who is the cashier to deliver the request ;
-        $order_id=$request->order_id;
+        $order_id = $request->order_id;
 
         DB::table('orders')
-        ->where('id', $order_id)
-        ->update([
-        'cashier_id' => $request->cashier_id,
-        ]);
+            ->where('id', $order_id)
+            ->update([
+                'cashier_id' => $request->cashier_id,
+            ]);
 
-        $order=Order::find($order_id);
+        $order = Order::find($order_id);
         return response()->json([
             "success" => true,
             "message" => "Order successfully updated",
-            "order"=>$order
+            "order" => $order
         ]);
     }
 
@@ -122,11 +122,12 @@ class OrderController extends Controller
         //
     }
 
-    public function getall_orders_cashier(Request $request){
+    public function getall_orders_cashier(Request $request)
+    {
 
-        $user_id=auth()->user()->id;
-        $rolerow=Role::where('user_id',$user_id)->get()->first();
-        $store_id=$rolerow->store_id;
+        $user_id = auth()->user()->id;
+        $rolerow = Role::where('user_id', $user_id)->get()->first();
+        $store_id = $rolerow->store_id;
 
         $query = "SELECT  orders.*, u.name as customer_name,u.expo_notifications,u.image_path
         FROM orders
@@ -137,31 +138,8 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'orders'=>$orders
+            'orders' => $orders
 
         ]);
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

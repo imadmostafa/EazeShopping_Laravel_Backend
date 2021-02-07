@@ -6,6 +6,7 @@ use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Dotenv\Validator;
 use Illuminate\Support\Facades\File;
+
 class GalleryController extends Controller
 {
     /**
@@ -15,7 +16,6 @@ class GalleryController extends Controller
      */
     public function index()
     {
-
     }
 
     /**
@@ -25,7 +25,6 @@ class GalleryController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -40,26 +39,24 @@ class GalleryController extends Controller
 
 
 
-  if ($files = $request->file('file')) {
+        if ($files = $request->file('file')) {
 
-      //store file into document folder
-      $file = $request->file('file')->store('storage/uploads','public');
+            //store file into document folder
+            $file = $request->file('file')->store('storage/uploads', 'public');
 
 
-      //store your file into database
-      $document = new Gallery();
-      $document->path =  env('APP_URL').'/'.$file;
-      $document->name = $request->name;
-      $document->save();
+            //store your file into database
+            $document = new Gallery();
+            $document->path =  env('APP_URL') . '/' . $file;
+            $document->name = $request->name;
+            $document->save();
 
-      return response()->json([
-          "success" => true,
-          "message" => "File successfully uploaded",
-          "file" => $document->path
-      ]);
-
-  }
-
+            return response()->json([
+                "success" => true,
+                "message" => "File successfully uploaded",
+                "file" => $document->path
+            ]);
+        }
     }
 
     /**
@@ -70,7 +67,6 @@ class GalleryController extends Controller
      */
     public function show(Gallery $gallery)
     {
-
     }
 
     /**
@@ -104,42 +100,32 @@ class GalleryController extends Controller
      */
     public function destroy(Gallery $gallery)
     {
-        $gallery_id=request('id');
-        $gallery_tobeDeleted=Gallery::find($gallery_id);
+        $gallery_id = request('id');
+        $gallery_tobeDeleted = Gallery::find($gallery_id);
         $image_path = $gallery_tobeDeleted->path; // Value is not URL but directory file path
         //$gallery_tobeDeleted->delete();
-if(File::exists($image_path)) {
-    File::delete($image_path);
-    $gallery_tobeDeleted->delete();
-    return response()->json([
-        "success" => true,
+        if (File::exists($image_path)) {
+            File::delete($image_path);
+            $gallery_tobeDeleted->delete();
+            return response()->json([
+                "success" => true,
 
-    ]);
+            ]);
+        }
+        return response()->json([
+            "success" => false,
 
-
-
-}
-return response()->json([
-    "success" => false,
-
-]);
-
-
-
+        ]);
     }
 
 
 
 
 
-    public function getImagebyId($id){
-$image=Gallery::find($id);
-$path=$image->path;
-return response()->download(public_path($path));
-
+    public function getImagebyId($id)
+    {
+        $image = Gallery::find($id);
+        $path = $image->path;
+        return response()->download(public_path($path));
     }
-
-
-
-
 }

@@ -23,15 +23,13 @@ class Product extends Model
 
 
 
-public function image(){
-    return $this->hasOne(Gallery::class,'gallery_id');
-}
+    public function image()
+    {
+        return $this->hasOne(Gallery::class, 'gallery_id');
+    }
 
-
-
-
-
-
-
-
+    public function store_owner()
+    {
+        return $this->belongsTo(User::class, 'store_id', 'id');
+    }
 }

@@ -8,35 +8,38 @@ use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use App\Models\Gallery;
 use App\Models\Product;
+
 class UserController extends Controller
 {
 
-public function getUser_ById(Request $request){
-    $user=User::find($request->id);
- return response()->json([
-     "success" => true,
-     "message" => "User expotoken successfully uploaded",
-     "user" => $user,
+    public function getUser_ById(Request $request)
+    {
+        $user = User::find($request->id);
+        return response()->json([
+            "success" => true,
+            "message" => "User expotoken successfully uploaded",
+            "user" => $user,
 
- ]);
-}
+        ]);
+    }
 
-    public function update_expotoken(Request $request){
+    public function update_expotoken(Request $request)
+    {
 
-        $user_id=auth()->user()->id;
+        $user_id = auth()->user()->id;
 
-           DB::table('users')
-           ->where('id', $user_id)
-           ->update([
-           'expo_notifications'=>$request->expotoken,
-           ]);
-  $user=User::find($user_id);
- return response()->json([
-     "success" => true,
-     "message" => "User expotoken successfully uploaded",
-     "user" => $user,
+        DB::table('users')
+            ->where('id', $user_id)
+            ->update([
+                'expo_notifications' => $request->expotoken,
+            ]);
+        $user = User::find($user_id);
+        return response()->json([
+            "success" => true,
+            "message" => "User expotoken successfully uploaded",
+            "user" => $user,
 
- ]);
+        ]);
     }
     /**
      * Display a listing of the resource.
@@ -66,7 +69,7 @@ public function getUser_ById(Request $request){
      */
     //store new user with  role of cashier in request ;
     public function store_cashier(Request $request)
-    {//only store owner can create his cashier
+    { //only store owner can create his cashier
 
         $request->validate([
             'name' => 'required',
@@ -80,16 +83,17 @@ public function getUser_ById(Request $request){
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);
-        $user_id=$user->id;
-        $store_id=auth()->user()->id;
+        $user_id = $user->id;
+        $store_id = auth()->user()->id;
 
         //create new role of cashier
-        $createRole = [ 'user_id' =>$user_id,
-        'role' => 'cashier',
-        'store_id' => $store_id,
+        $createRole = [
+            'user_id' => $user_id,
+            'role' => 'cashier',
+            'store_id' => $store_id,
         ];
-$role = new Role($createRole);
-$role->save();
+        $role = new Role($createRole);
+        $role->save();
 
         return response()->json($user);
     }
@@ -127,39 +131,38 @@ $role->save();
     {
         //only allowed to update profile picture ..
 
-        $user_id=auth()->user()->id;
+        $user_id = auth()->user()->id;
         if ($files = $request->file('file')) {
 
             //store file into document folder
-            $file = $request->file('file')->store('storage/uploads','public');
+            $file = $request->file('file')->store('storage/uploads', 'public');
 
- $file22=$file;
+            $file22 = $file;
             //store your file into database
             $document = new Gallery();
-            $document->path = env('APP_URL').'/'.$file;
+            $document->path = env('APP_URL') . '/' . $file;
             $document->name = 'image';
             $document->save();
-           $gallery_id= $document->id;
-           DB::table('users')
-           ->where('id', $user_id)
-           ->update([
-           'image_path'=>$document->path,
-           ]);
+            $gallery_id = $document->id;
+            DB::table('users')
+                ->where('id', $user_id)
+                ->update([
+                    'image_path' => $document->path,
+                ]);
+        } else {
+            return response()->json([
+                "success" => false,
+                "message" => 'no image found'
+            ]);
+        }
+        $user = User::find($user_id);
+        return response()->json([
+            "success" => true,
+            "message" => "User Image successfully uploaded",
+            "user" => $user,
+            'path' => $document->path,
 
- }else{
-  return response()->json([
-      "success" => false,
-      "message"=>'no image found'
-  ]);
- }
-  $user=User::find($user_id);
- return response()->json([
-     "success" => true,
-     "message" => "User Image successfully uploaded",
-     "user" => $user,
-     'path'=>$document->path,
-
- ]);
+        ]);
     }
 
     /**
@@ -172,25 +175,24 @@ $role->save();
     //delete user with its roles in tables ;
     public function destroy($id)
     {
-         $user=User::find($id);
+        $user = User::find($id);
 
         $user->delete();
 
         return response()->json([
-            'success'=>true,
+            'success' => true,
             'data' => 'Member deleted'
         ]);
-
-
     }
 
 
-public function getAllMembers(){//from store owner
+    public function getAllMembers()
+    { //from store owner
 
 
 
 
- $store_id=auth()->user()->id;
+        $store_id = auth()->user()->id;
 
         $query = "SELECT  users.id, users.name, users.email , r.role
                 FROM users
@@ -201,15 +203,15 @@ public function getAllMembers(){//from store owner
 
         return response()->json([
             'success' => true,
-            'members'=>$members
+            'members' => $members
         ]);
+    }
 
-}
 
+    public function getAllCustomers()
+    { //from store owner being the signed in using it
 
-    public function getAllCustomers(){//from store owner being the signed in using it
-
-        $store_id=auth()->user()->id;
+        $store_id = auth()->user()->id;
 
         $query = "SELECT  users.id, users.name, users.email , r.role
                 FROM users
@@ -220,42 +222,35 @@ public function getAllMembers(){//from store owner
 
         return response()->json([
             'success' => true,
-            'customers'=>$customers
+            'customers' => $customers
         ]);
-
-
-
     }
-    public function getStores(){//for any login role
+    public function getStores()
+    { //for any login role
 
 
 
 
         //$store_id=auth()->user()->id;
 
-               $query = "SELECT  users.id, users.name, users.email , r.role
+        $query = "SELECT  users.id, users.name, users.email , r.role
                        FROM users
                        INNER JOIN roles r on users.id = r.user_id
                        WHERE (role = 'store' )
                        ORDER BY user_id";
-               $members = DB::Select($query);
+        $members = DB::Select($query);
 
-               return response()->json([
-                   'success' => true,
-                   'stores'=>$members
-               ]);
-
-
-
+        return response()->json([
+            'success' => true,
+            'stores' => $members
+        ]);
+    }
 
 
+    public function getAllCashiers()
+    {
 
-       }
-
-
-    public function getAllCashiers(){
-
-        $store_id=auth()->user()->id;
+        $store_id = auth()->user()->id;
 
         $query = "SELECT  users.id, users.name, users.email , r.role
                 FROM users
@@ -266,21 +261,7 @@ public function getAllMembers(){//from store owner
 
         return response()->json([
             'data' => 'Successfully fetched',
-            'customers'=>$cashiers
+            'customers' => $cashiers
         ]);
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 }

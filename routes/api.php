@@ -37,22 +37,26 @@ Route::post('/register_customer', [AuthController::class, 'register_customer']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/stores', [UserController::class, 'getStores']);
 //Role Based Restful api
-Route::middleware(['auth:api', 'role'])->group(function() {
-//category
-   // Route::middleware(['scope:store,cashier,customer'])->get('/categories', [CategoryController::class, 'index']);
+Route::middleware(['auth:api', 'role'])->group(function () {
+    //category
+    // Route::middleware(['scope:store,cashier,customer'])->get('/categories', [CategoryController::class, 'index']);
     Route::middleware(['scope:store,cashier,customer'])->post('/category', [CategoryController::class, 'store']);
     Route::middleware(['scope:store,cashier,customer'])->delete('/category/{id}', [CategoryController::class, 'destroy']);
     Route::middleware(['scope:store,cashier,customer'])->get('/products_category/{id}', [CategoryController::class, 'getProducts_ByCategory']);
 
 
 
-//gallery
+    //gallery
     Route::middleware(['scope:store,cashier,customer'])->delete('/gallery/{id}', [GalleryController::class, 'destroy']);
     Route::middleware(['scope:store,cashier,customer'])->post('/insertimage', [GalleryController::class, 'store']);
     Route::middleware(['scope:store,cashier,customer'])->get('/getimage/{id}', [GalleryController::class, 'getImagebyId']);
 
 
-//cashiers,users,customers
+
+
+    Route::middleware(['scope:store,cashier,customer'])->get('/try', [ProductController::class, 'getProducts_Images_User']); //trial
+
+    //cashiers,users,customers
     Route::middleware(['scope:store,cashier,customer'])->post('/addcashier', [UserController::class, 'store_cashier']);
     Route::middleware(['scope:store,cashier,customer'])->get('/users', [UserController::class, 'index']);
     Route::middleware(['scope:store,cashier,customer'])->get('/allmembers', [UserController::class, 'getAllMembers']);
@@ -64,40 +68,29 @@ Route::middleware(['auth:api', 'role'])->group(function() {
 
 
 
-//prodcuts
-Route::middleware(['scope:store,cashier,customer'])->get('/productbyname_customer/{name}', [ProductController::class, 'getproductbyname_customer']);
-Route::middleware(['scope:store,cashier,customer'])->get('/products', [ProductController::class, 'index']);
-Route::middleware(['scope:store,cashier,customer'])->post('/product', [ProductController::class, 'store']);
-Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images', [ProductController::class, 'getAllProductsImages']);
-Route::middleware(['scope:store,cashier,customer'])->delete('/product/{id}', [ProductController::class, 'destroy']);
-Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images_customer', [ProductController::class, 'getAllProductsImages_Customer']);
-Route::middleware(['scope:store,cashier,customer'])->post('/product_edit', [ProductController::class, 'update']);
-Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images_all', [ProductController::class, 'index']);
+    //prodcuts
+    Route::middleware(['scope:store,cashier,customer'])->get('/productbyname_customer/{name}', [ProductController::class, 'getproductbyname_customer']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/products', [ProductController::class, 'index']);
+    Route::middleware(['scope:store,cashier,customer'])->post('/product', [ProductController::class, 'store']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images', [ProductController::class, 'getAllProductsImages']);
+    Route::middleware(['scope:store,cashier,customer'])->delete('/product/{id}', [ProductController::class, 'destroy']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images_customer', [ProductController::class, 'getAllProductsImages_Customer']);
+    Route::middleware(['scope:store,cashier,customer'])->post('/product_edit', [ProductController::class, 'update']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/products_w_images_all', [ProductController::class, 'index']);
 
 
 
-//bills
-Route::middleware(['scope:store,cashier,customer'])->post('/bill', [BillController::class, 'store']);
-Route::middleware(['scope:store,cashier,customer'])->get('/bills_notdone', [BillController::class, 'index']);
-Route::middleware(['scope:store,cashier,customer'])->put('/setbilldone', [BillController::class, 'update']);
+    //bills
+    Route::middleware(['scope:store,cashier,customer'])->post('/bill', [BillController::class, 'store']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/bills_notdone', [BillController::class, 'index']);
+    Route::middleware(['scope:store,cashier,customer'])->put('/setbilldone', [BillController::class, 'update']);
 
 
-//online orders
-Route::middleware(['scope:store,cashier,customer'])->post('/order', [OrderController::class, 'store']);
-Route::middleware(['scope:store,cashier,customer'])->post('/setcashier_order', [OrderController::class, 'update']);
-Route::middleware(['scope:store,cashier,customer'])->get('/orders_cashier', [OrderController::class, 'getall_orders_cashier']);
+    //online orders
+    Route::middleware(['scope:store,cashier,customer'])->post('/order', [OrderController::class, 'store']);
+    Route::middleware(['scope:store,cashier,customer'])->post('/setcashier_order', [OrderController::class, 'update']);
+    Route::middleware(['scope:store,cashier,customer'])->get('/orders_cashier', [OrderController::class, 'getall_orders_cashier']);
 
-//online-orders -users , push notifications;
-Route::middleware(['scope:store,cashier,customer'])->post('/update_expotoken', [UserController::class, 'update_expotoken']);
-
-
+    //online-orders -users , push notifications;
+    Route::middleware(['scope:store,cashier,customer'])->post('/update_expotoken', [UserController::class, 'update_expotoken']);
 });
-
-
-
-
-
-
-
-
-

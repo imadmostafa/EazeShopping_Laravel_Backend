@@ -10,7 +10,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens,HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -45,15 +45,14 @@ class User extends Authenticatable
     ];
 
 
-    public function role() {
+    public function role()
+    {
         return $this->hasOne(Role::class);
     }
 
 
-
-
-
-
-
-
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'store_id', 'id');
+    }
 }

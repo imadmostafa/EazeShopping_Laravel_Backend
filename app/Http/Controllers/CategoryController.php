@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class CategoryController extends Controller
 {
     /**
@@ -15,11 +16,11 @@ class CategoryController extends Controller
     public function index()
     {
 
-        $categories=Category::all();
+        $categories = Category::all();
         return response()->json([
             "success" => true,
 
-            "categories"=>$categories
+            "categories" => $categories
 
         ]);
     }
@@ -52,7 +53,6 @@ class CategoryController extends Controller
 
 
         ]);
-
     }
 
     /**
@@ -98,51 +98,40 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
 
-    $category_id=request('id');
-    $category_tobeDeleted=Category::find($category_id);
-    $category_tobeDeleted->delete();
+        $category_id = request('id');
+        $category_tobeDeleted = Category::find($category_id);
+        $category_tobeDeleted->delete();
 
-return response()->json([
+        return response()->json([
             "success" => true,
 
 
 
         ]);
-
-
-
-
     }
 
 
 
-public function getProducts_ByCategory($id){
+    public function getProducts_ByCategory($id)
+    {
 
 
-    $store_id=auth()->user()->id;
-    $category_id=$id;
-    $query = "SELECT  products.*, g.path,c.name as category_name
+        $store_id = auth()->user()->id;
+        $category_id = $id;
+        $query = "SELECT  products.*, g.path,c.name as category_name
     FROM products
     INNER JOIN galleries g on products.gallery_id = g.id
     INNER JOIN categories c on products.category_id=c.id
     WHERE (products.store_id = $store_id AND products.category_id=$category_id)
     ORDER BY products.id";
-    $products = DB::Select($query);
+        $products = DB::Select($query);
 
-    return response()->json([
-        "success" => true,
-        'products'=>$products
-
-
-
-    ]);
+        return response()->json([
+            "success" => true,
+            'products' => $products
 
 
 
-}
-
-
-
-
-
+        ]);
+    }
 }
