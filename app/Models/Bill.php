@@ -13,8 +13,11 @@ class Bill extends Model
         'bill_amount',
         'isDone',
         'customer_id',
-
-
-
     ];
+
+
+
+
+
+
 }

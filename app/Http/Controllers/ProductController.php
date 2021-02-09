@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -20,7 +21,6 @@ class ProductController extends Controller
     public function index()
     {
         //$products = Product::all();
-
         // $store_id=auth()->user()->id;
         $query = "SELECT  products.*, g.path,c.name as category_name,u.name as store_name
     FROM products
@@ -55,9 +55,25 @@ class ProductController extends Controller
     {
         //one request with formdata image(file) + data of product
         //save image->get its created ID -> create the project
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'file'=>'required',
+            'description' => 'required',
+            'category_id' => 'required',
+            'price' => 'required',
+            'mass' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "File couldn't upload",
+            ]);
+        }
+
         $product = new Product();
-
-
         $product->name = $request->name;
         $product->mass = $request->mass;
         $product->price = $request->price;
@@ -65,13 +81,12 @@ class ProductController extends Controller
         $product->category_id = $request->category_id;
         $product->store_id = auth()->user()->id;
         $gallery_id = '1';
-        $file22 = 's';
-        if ($files = $request->file('file')) {
+        $file_tostore = '';
 
+        if ($files = $request->file('file')) {
             //store file into document folder
             $file = $request->file('file')->store('storage/uploads', 'public');
-
-            $file22 = $file;
+            $file_tostore = $file;
             //store your file into database
             $document = new Gallery();
             $document->path = env('APP_URL') . '/' . $file;
@@ -80,14 +95,14 @@ class ProductController extends Controller
             $gallery_id = $document->id;
         }
         $product->gallery_id = $gallery_id;
-        //$server_url=env('APP_URL');
         $product->save();
+
         return response()->json([
             "success" => true,
             "message" => "File successfully uploaded",
             "new_product" => $product,
             'path' => $document->path,
-            'path2' => env('APP_URL') . '/' . $file22
+            'path2' => env('APP_URL') . '/' . $file_tostore
         ]);
     }
 
@@ -124,7 +139,12 @@ class ProductController extends Controller
     {
         //update already existign product with image change
         $product_id = $request->id;
-        // $product = Product::find($product_id);
+
+
+
+
+
+
         $gallery_id = '1';
         $file22 = 's';
         if ($files = $request->file('file')) {
@@ -192,11 +212,6 @@ class ProductController extends Controller
     public function getproductbyname_customer($name)
     {
 
-
-        //$name=$request->name;//name of product
-        //$store_id=auth()->user()->id;
-        //$count = Product::where('name', $name)->where('store_id',$store_id)->get()->first();
-        //return response()->download(public_path('storage\uploads\j74SPP4ljcifeIquWn075sxoMumyVl7jFS7Tdikt.png'));
         $name = request('name');
         $user_id = auth()->user()->id;
         $rolerow = Role::where('user_id', $user_id)->get()->first();
@@ -210,17 +225,12 @@ INNER JOIN categories c on products.category_id=c.id
 WHERE (products.store_id = $store_id AND products.name='$name')
 ORDER BY products.id";
         $product = DB::Select($query);
-        //commas important if putting string in raw query , if number no proble
 
         return response()->json([
             'success' => true,
             'product' => $product,
 
         ]);
-        //C:\react\laravel_Final\SmartGroceryBackend\public\storage\uploads\j74SPP4ljcifeIquWn075sxoMumyVl7jFS7Tdikt.png
-
-
-
     }
 
 

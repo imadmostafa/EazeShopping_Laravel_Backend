@@ -12,7 +12,13 @@ class Gallery extends Model
 
         'name',
         'path',
-
-
     ];
+
+
+
+
+
+
+
+
 }

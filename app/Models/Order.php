@@ -21,4 +21,16 @@ class Order extends Model
 
 
     ];
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id', 'id');
+    }
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'cashier_id', 'id');
+    }
+    public function store_owner()
+    {
+        return $this->belongsTo(User::class, 'store_id', 'id');
+    }
 }
